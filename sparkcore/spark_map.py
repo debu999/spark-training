@@ -91,7 +91,7 @@ def wordcount():
     )
     word_count = word_count.repartition(10)
     pp(f"new partitions : {word_count.getNumPartitions()}")
-    print(f"debug_string word_count: {word_count.toDebugString()}")
+    print(f"debug_string word_count : {word_count.toDebugString()}")
 
 
 if __name__ == "__main__":
