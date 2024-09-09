@@ -1,0 +1,5 @@
+spark is a big data tool.
+Looking forward to use this.
+its a great tool for big data processing.
+second file to load to rdd in spark.
+sc = spark context represents connection to spark cluster so any interaction with spark cluster is via sc.
