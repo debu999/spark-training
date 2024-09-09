@@ -85,7 +85,13 @@ def wordcount():
         .sortBy(ascending=False, keyfunc=lambda x: x[1])
     )
 
-    pp(word_count.collect())
+    pp(
+        f"""word_count rdd: {word_count.collect()} 
+       have partitions {word_count.getNumPartitions()}."""
+    )
+    word_count = word_count.repartition(10)
+    pp(f"new partitions : {word_count.getNumPartitions()}")
+    print(f"debug_string word_count: {word_count.toDebugString()}")
 
 
 if __name__ == "__main__":
