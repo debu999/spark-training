@@ -82,6 +82,7 @@ def wordcount():
         lines_rdd.flatMap(lambda line: line.split(" "))
         .map(lambda word: (word, 1))
         .reduceByKey(lambda a, b: a + b)
+        .sortBy(ascending=False, keyfunc=lambda x: x[1])
     )
 
     pp(word_count.collect())
