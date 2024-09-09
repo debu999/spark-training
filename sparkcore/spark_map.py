@@ -86,7 +86,7 @@ def wordcount():
     )
 
     pp(
-        f"""word_count rdd: {word_count.collect()} 
+        f"""word_count rdd: {word_count.collect()}
        have partitions {word_count.getNumPartitions()}."""
     )
     word_count = word_count.repartition(10)
