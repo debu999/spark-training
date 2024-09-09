@@ -48,6 +48,49 @@ def text_rdd_operations():
     )
 
 
+def text_rdd_op2():
+    linesRdd = sc.textFile("c:/spark-training/samples")
+    wordsRdd = linesRdd.map(lambda line: line.split(" ")).collect()
+    pp(wordsRdd)
+    wordsRddFlat = linesRdd.flatMap(lambda line: line.split(" ")).collect()
+    pp(wordsRddFlat)
+
+
+def number_rdd_op1():
+    rdd = sc.parallelize([5, 8, 9, 10, 11, 56, 12, 45])
+    pp(rdd.map(lambda x: x * 2).collect())
+    # pp(rdd.flatMap(lambda x: x * 2).collect()) error
+    pp(rdd.flatMap(lambda x: list([x * 2, x, x / 2])).collect())  # error
+
+
+def pair_rdd_op1():
+    pair_rdd1 = sc.parallelize([("a", 5), ("b", 12), ("a", 6), ("c", 3), ("b", 5)])
+    pair_rdd2 = pair_rdd1.groupByKey()
+    pp([(k, list(v)) for k, v in pair_rdd2.collect()])
+
+    rdd = sc.parallelize([1, 2, 3, 4, 5, 6, 7, 8, 9])
+    pp(rdd.reduce(lambda x, y: x + y))
+
+    p_rdd = sc.parallelize([("a", 5), ("b", 12), ("a", 6), ("c", 3), ("b", 5)])
+    pp(p_rdd.reduceByKey(lambda x, y: x + y).collect())
+
+
+def wordcount():
+
+    lines_rdd = sc.textFile("c:/spark-training/samples")
+    word_count = (
+        lines_rdd.flatMap(lambda line: line.split(" "))
+        .map(lambda word: (word, 1))
+        .reduceByKey(lambda a, b: a + b)
+    )
+
+    pp(word_count.collect())
+
+
 if __name__ == "__main__":
     # filter_rdd()
-    text_rdd_operations()
+    # text_rdd_operations()
+    # text_rdd_op2()
+    # number_rdd_op1()
+    # pair_rdd_op1()
+    wordcount()
