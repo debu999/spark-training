@@ -3,7 +3,17 @@ from pyspark.sql import SparkSession, avro
 from pyspark.sql.avro.functions import from_avro, to_avro
 from pprint import pp
 from time import sleep
-from pyspark.sql.types import StructType, StructField, StringType, IntegerType, DateType
+import sys
+
+from domains import Employee
+from pyspark.sql.types import (
+    StructType,
+    StructField,
+    StringType,
+    IntegerType,
+    DateType,
+    DoubleType,
+)
 
 # conf = SparkConf().setAppName("deb-spark").setMaster("local[*]")
 # sc = SparkContext(master="local", appName="deb-spark")
@@ -15,6 +25,7 @@ spark = (
     .getOrCreate()
 )
 spark.sparkContext.setLogLevel("WARN")
+spark.sparkContext.addPyFile("./sparkcore/domains.py")
 sc._jsc.hadoopConfiguration().set(
     "mapreduce.input.fileinputformat.input.dir.recursive", "true"
 )
@@ -24,6 +35,16 @@ employee_schema = StructType(
         StructField("empId", IntegerType(), True),
         StructField("name", StringType(), True),
         StructField("designation", StringType(), True),
+    ]
+)
+
+
+emp_schema = StructType(
+    [
+        StructField("empId", IntegerType(), True),
+        StructField("name", StringType(), True),
+        StructField("designation", StringType(), True),
+        StructField("salary", DoubleType(), True),
     ]
 )
 
@@ -137,7 +158,7 @@ def groupby_agg():
     emp_df.groupBy("designation").agg(sum("salary").alias("total_salary")).show()
 
 
-def joins():
+def joins_concepts():
     people_df = (
         spark.read.format("csv")
         .option("header", True)
@@ -154,6 +175,56 @@ def joins():
     join_df = people_df.join(postalcode_df, on="pcode")
     join_df.show()
     join_df.drop(postalcode_df.state).show()
+    emp_df = (
+        spark.read.format("csv")
+        .option("header", True)
+        .option("inferSchema", True)
+        .load("c:/spark-training/samples/employees.csv")
+    )
+    address_df = (
+        spark.read.format("csv")
+        .option("header", True)
+        .option("inferSchema", True)
+        .load("c:/spark-training/samples/address.csv")
+    )
+    emp_df.show
+    address_df.show
+    emp_df.join(address_df, emp_df.empId == address_df.id).show()
+    emp_df.join(address_df, emp_df.empId == address_df.id).drop(address_df.id).show()
+
+    emp_df.createTempView("employee")
+    spark.sql("select * from employee").show()
+    spark.sql("select empId,name from employee").show()
+    people_df.createTempView("people")
+    postalcode_df.createTempView("postalcode")
+    people_df.show()
+    spark.sql(
+        "select a.pcode,a.lastName,a.firstName,b.city,b.state from people a,postalcode b where a.pcode=b.pcode"
+    ).show()
+    people_df.join(
+        postalcode_df, people_df.pcode == postalcode_df.pcode, "left_outer"
+    ).show()
+    people_df.join(
+        postalcode_df, people_df.pcode == postalcode_df.pcode, "right_outer"
+    ).show()
+    people_df.join(
+        postalcode_df, people_df.pcode == postalcode_df.pcode, "outer"
+    ).show()
+
+
+def to_employee_objects():
+    # Read the CSV file into a Spark DataFrame
+    df = spark.read.csv(
+        "c:/spark-training/samples/employees.csv", schema=emp_schema, header=True
+    )
+    df.show()
+    # Convert the DataFrame into a list of Employee objects
+    emps = df.rdd.map(
+        lambda row: Employee(row.empId, row.name, row.designation, row.salary)
+    ).collect()
+    # Print the list of Employee objects
+    for employee in emps:
+        print(employee.__dict__)
 
 
 if __name__ == "__main__":
@@ -164,6 +235,8 @@ if __name__ == "__main__":
     # read_from_mysql_db()
     # csv_to_db()
     # groupby_agg()
-    joins()
+    # joins()
+    # joins_concepts()
+    to_employee_objects()
     sc.stop()
     spark.stop()
