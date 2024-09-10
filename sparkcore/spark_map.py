@@ -102,5 +102,4 @@ if __name__ == "__main__":
     # number_rdd_op1()
     # pair_rdd_op1()
     wordcount()
-    sleep(300)
     sc.stop()
