@@ -22,3 +22,15 @@ rpsconsulting spark training code
 +----+-------+-----+
 
 - `--master` to pass master in command instead of code. Code takes precedence.
+
+>>> df_sel = df.select(["name", "pcode"])
+>>> df_sel.show()
++-------+-----+
+|   name|pcode|
++-------+-----+
+|  Alice|94304|
+|Brayden|94304|
+|  Carla|10036|
+|  Diana| null|
+|Étienne|94104|
++-------+-----+
