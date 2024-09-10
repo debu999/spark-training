@@ -137,6 +137,25 @@ def groupby_agg():
     emp_df.groupBy("designation").agg(sum("salary").alias("total_salary")).show()
 
 
+def joins():
+    people_df = (
+        spark.read.format("csv")
+        .option("header", True)
+        .load("c:/spark-training/samples/people.csv")
+    )
+    postalcode_df = (
+        spark.read.format("csv")
+        .option("header", True)
+        .load("c:/spark-training/samples/postalcodes.csv")
+    )
+    postalcode_df.show()
+    people_df.show()
+
+    join_df = people_df.join(postalcode_df, on="pcode")
+    join_df.show()
+    join_df.drop(postalcode_df.state).show()
+
+
 if __name__ == "__main__":
     # query_json()
     # read_from_parquet()
@@ -144,7 +163,7 @@ if __name__ == "__main__":
     # read_from_avro()
     # read_from_mysql_db()
     # csv_to_db()
-    groupby_agg()
-
+    # groupby_agg()
+    joins()
     sc.stop()
     spark.stop()
