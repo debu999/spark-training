@@ -34,3 +34,10 @@ rpsconsulting spark training code
 |  Diana| null|
 |Étienne|94104|
 +-------+-----+
+
+- Data frame option - select/take/first/count/show/printschema/collect/write/
+```
+userDF2.write.option("header",true).csv("c:/test-out-csv-2")
+
+userDF2.write.format("csv").option("header",true).save("c:/test-out-csv-3")
+```
