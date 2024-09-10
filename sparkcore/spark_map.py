@@ -1,9 +1,10 @@
 from pyspark import SparkContext, SparkConf
 from pprint import pp
-
+from time import sleep
 
 # conf = SparkConf().setAppName("deb-spark").setMaster("local[*]")
-sc = SparkContext(master="local", appName="deb-spark")
+# sc = SparkContext(master="local", appName="deb-spark")
+sc = SparkContext(appName="deb-spark")
 sc._jsc.hadoopConfiguration().set(
     "mapreduce.input.fileinputformat.input.dir.recursive", "true"
 )
@@ -89,9 +90,9 @@ def wordcount():
         f"""word_count rdd: {word_count.collect()}
        have partitions {word_count.getNumPartitions()}."""
     )
-    word_count = word_count.repartition(10)
-    pp(f"new partitions : {word_count.getNumPartitions()}")
-    print(f"debug_string word_count : {word_count.toDebugString()}")
+    # word_count = word_count.repartition(10)
+    # pp(f"new partitions : {word_count.getNumPartitions()}")
+    # print(f"debug_string word_count : {word_count.toDebugString()}")
 
 
 if __name__ == "__main__":
@@ -101,4 +102,5 @@ if __name__ == "__main__":
     # number_rdd_op1()
     # pair_rdd_op1()
     wordcount()
+    sleep(300)
     sc.stop()
